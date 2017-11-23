@@ -1,98 +1,70 @@
 #!/usr/bin/env python3
 
-import os
 import random
 import string
 
+draw_size = 35 # odd int
+limbs = ['O', ' | ', '/| ', '/|\\', '|', '/  ', '/ \\']
+bodyCombinations = {
+    1: [0],
+    2: [0, 1],
+    3: [0, 2],
+    4: [0, 3],
+    5: [0, 3, 4],
+    6: [0, 3, 4, 5],
+    7: [0, 3, 4, 6]
+}
 
-def printLine():
-    print('+---------------------------------+')
+
+def print_separator() -> None:
+    print('+' + '-' * draw_size + '+')
 
 
-def printText(msg, printTop=False, printBottom=False):
+def print_text(message: str) -> None:
+    print('|' + message.center(draw_size).upper() + '|')
 
-    if printTop:
-        printLine()
 
-    message = msg.upper()
+def print_hangman(num_tries: int) -> None:
+    print_text('|')
+    print_text('|')
 
-    begin = True
+    body = bodyCombinations.get(num_tries, [])
 
-    for i in range(len(message), 33):
-
-        if begin is True:
-            message = " " + message
+    for i in range(5):
+        if i < len(body):
+            print_text(limbs[body[i]])
         else:
-            message = message + " "
+            print_text('')
 
-        begin = not begin
-
-    print('|' + message + '|')
-
-    if printBottom:
-        printLine()
+    print_separator()
 
 
-def printHangman(num_tries):
-    printText('|')
-    printText('|')
+def print_available_letters(initial_letters: list, av_letters: list) -> None:
+    
+    print_text('Available Letters')
+    firstset=''
+    secondset=''
 
-    if num_tries >= 1:
-        printText('O')
-    else:
-        printText('')
-
-    if num_tries == 2:
-        printText('/  ')
-    elif num_tries == 3:
-        printText('/| ')
-    elif num_tries >= 4:
-        printText('/|\\')
-    else:
-        printText('')
-
-    if num_tries >= 5:
-        printText('|')
-    else:
-        printText('')
-
-    if num_tries == 6:
-        printText('/  ')
-    elif num_tries >= 7:
-        printText('/ \\')
-    else:
-        printText('')
-
-    # close box
-    printText('')
-    printLine()
-
-
-def printAvailableLetters(av_letters):
-
-    letters = string.ascii_uppercase
-
-    s_1 = ''
-    for l in letters[:13]:
+    for l in initial_letters[:13]:
         if l in av_letters:
-            s_1 += l + " "
+            firstset += l + ' '
         else:
-            s_1 += "  "
+            firstset += ' '*2
 
-    s_2 = ''
-    for l in letters[13:]:
+    print_text(firstset)
+
+    for l in initial_letters[13:]:
         if l in av_letters:
-            s_2 += l + " "
+            secondset += l + ' '
         else:
-            s_2 += "  "
+            secondset += ' '*2
+    print_text(secondset)
 
-    printText(s_1)
-    printText(s_2)
-
-    printLine()
+    print_separator()
 
 
-def getRandomWord():
+def get_random_word() -> str:
+
     try:
         with open('words.txt', 'r') as f:
             words = f.readlines()
@@ -103,85 +75,69 @@ def getRandomWord():
     words = [x.strip() for x in words]
     return random.choice(words).upper()
 
+    
 
-def printGuesses(word, guesses):
-
-    s = ''
-    for x in word:
-        if x in guesses:
-            s += x + ' '
+def print_guesses(word: str, guesses: list) -> None:
+    
+    
+    guess_set = ''
+    for c in word:
+        if c in guesses:
+            guess_set += c + ' '
+            pass
+        elif c == ' ':
+            guess_set += (' '*2);
+            pass
         else:
-            s += '_ '
+            guess_set += '_ '
 
-    printText(s)
-    printLine()
-
-
-def getLetter(av_letters):
-
-    letter = input("Insert one letter: ")
-    letter = letter.upper()
-
-    while not len(letter) == 1 or letter not in av_letters or letter not in string.ascii_uppercase:
-        print("Insert one available letter!")
-        letter = input("Insert one letter: ").upper()
-
-    return letter
+    print_text(guess_set)
+    print_separator()
 
 
-def checkVictory(word, guesses):
-    w = set(word)
-    g = guesses
+def get_letter(available_letters: list) -> str:
+    while True:
+        letter = input('Insert one available letter: ').upper()
+        if len(letter) == 1 and letter in available_letters:
+            return letter
 
-    return sorted(w) == sorted(g)
 
-
-def runGame():
-    # os.system('cls')  # on windows
-    os.system('clear')
-
-    available_letters = list(string.ascii_uppercase)
-    wordToGuess = getRandomWord()
+def main() -> None:
+    initial_letters = list(string.ascii_uppercase)
+    available_letters = initial_letters.copy()
+    word_to_guess = get_random_word()
     guesses = list()
-    print(wordToGuess)
-    wrongTries = 0
-    victory = False
+    failed_attempts = 0
+    has_won = False
 
-    while wrongTries < 8 and not victory:
-
-        os.system('clear')
-        printText('hangman', True, True)
-        printHangman(wrongTries)
-        printText('Your guess...', False, False)
-        printGuesses(wordToGuess, guesses)
-        printText('Available letters', False, False)
-        printAvailableLetters(available_letters)
-        letter = getLetter(available_letters)
+    while failed_attempts <= 7:
+        print('\033[H\033[J')
+        print_separator()
+        print_text('Hangman')
+        print_hangman(failed_attempts)
+        print_text('Your Guess...')
+        print_guesses(word_to_guess, guesses)
+        print_available_letters(initial_letters, available_letters)
+        if has_won or failed_attempts == 7:
+            break
+        letter = get_letter(available_letters)
         available_letters.remove(letter)
 
-        if letter not in wordToGuess:
-            wrongTries += 1
-        else:
+        if letter in word_to_guess:
             guesses.append(letter)
+        else:
+            failed_attempts += 1
 
-        victory = checkVictory(wordToGuess, guesses)
-#        if checkVictory(wordToGuess, guesses):
-#            victory = True
-#            break
+        cmpWord = list(set(word_to_guess.replace(' ', '')))
+        cmpWord.sort()
+        guesses.sort()
+        if cmpWord == guesses:
+            has_won = True
+        else:
+            has_won = False
 
-    os.system('clear')
-    printText('hangman', True, True)
-    printHangman(wrongTries)
-    printText('Your guess...', False, False)
-    printGuesses(wordToGuess, guesses)
-    printText('Available letters', False, False)
-    printAvailableLetters(available_letters)
-
-    if victory:
-        print("Congratz!")
-    else:
-        print("Better luck next time...")
+    print('You Won! :)' if has_won else 'You Lost! :(')
 
 
-if __name__ == "__main__":
-    runGame()
+if __name__ == '__main__':
+    main()
