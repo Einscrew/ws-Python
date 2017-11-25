@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-import random
+from random import choice as random_choise
 import string
 
 draw_size = 35 # odd int
@@ -68,17 +68,20 @@ def get_random_word() -> str:
     try:
         with open('words.txt', 'r') as f:
             words = f.readlines()
+            print(words)
+            if not words:                
+                print('No words were found in the file specified')
+                exit(-1)
     except FileNotFoundError:
         print('File with words not found!')
         exit(-1)
 
     words = [x.strip() for x in words]
-    return random.choice(words).upper()
+    return random_choise(words).upper()
 
     
 
 def print_guesses(word: str, guesses: list) -> None:
-    
     
     guess_set = ''
     for c in word:

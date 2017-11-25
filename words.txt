@@ -1,5 +1,4 @@
-Ola
-Joaquim
-NEECIST
-Tecnico
-Lisboa
+Boa tarde
+Neecist
+Python
+Boa tarde
