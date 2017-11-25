@@ -75,11 +75,10 @@ def get_random_word() -> str:
     except FileNotFoundError:
         print('File with words not found!')
         exit(-1)
-
-    w=[]
-    for x in words[:]:
-        w.append(x.strip())
-    return random_choice(w).upper()
+    
+    words = [w.strip() for w in words]
+    
+    return random_choice(words).upper()
 
     
 
