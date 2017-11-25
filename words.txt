@@ -2,3 +2,5 @@ Boa tarde
 Neecist
 Python
 Boa tarde
+Lisboa
+Tecnico
