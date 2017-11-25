@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from random import choice as random_choise
+from random import choice as random_choice
 import string
 
 draw_size = 35 # odd int
@@ -44,8 +44,9 @@ def print_available_letters(initial_letters: list, av_letters: list) -> None:
     print_text('Available Letters')
     firstset=''
     secondset=''
+    set_size = len(initial_letters)
 
-    for l in initial_letters[:13]:
+    for l in initial_letters[:set_size//2]:
         if l in av_letters:
             firstset += l + ' '
         else:
@@ -53,7 +54,7 @@ def print_available_letters(initial_letters: list, av_letters: list) -> None:
 
     print_text(firstset)
 
-    for l in initial_letters[13:]:
+    for l in initial_letters[set_size//2:]:
         if l in av_letters:
             secondset += l + ' '
         else:
@@ -77,7 +78,7 @@ def get_random_word() -> str:
         exit(-1)
 
     words = [x.strip() for x in words]
-    return random_choise(words).upper()
+    return random_choice(words).upper()
 
     
 
@@ -117,6 +118,7 @@ def main() -> None:
         print('\033[H\033[J')
         print_separator()
         print_text('Hangman')
+        print_separator()
         print_hangman(failed_attempts)
         print_text('Your Guess...')
         print_guesses(word_to_guess, guesses)
