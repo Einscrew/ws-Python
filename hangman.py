@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
-
+from os import system
 from random import choice as random_choice
 import string
 
-draw_size = 35 # odd int
-limbs = ['O', ' | ', '/| ', '/|\\', '|', '/  ', '/ \\']
-bodyCombinations = {
+DRAW_SIZE = 35 # odd int
+LIMBS = ['O', ' | ', '/| ', '/|\\', '|', '/  ', '/ \\']
+BODY_COMBINATIONS = {
     1: [0],
     2: [0, 1],
     3: [0, 2],
@@ -17,22 +17,22 @@ bodyCombinations = {
 
 
 def print_separator() -> None:
-    print('+' + '-' * draw_size + '+')
+    print('+' + '-' * DRAW_SIZE + '+')
 
 
 def print_text(message: str) -> None:
-    print('|' + message.center(draw_size).upper() + '|')
+    print('|' + message.center(DRAW_SIZE).upper() + '|')
 
 
 def print_hangman(num_tries: int) -> None:
     print_text('|')
     print_text('|')
 
-    body = bodyCombinations.get(num_tries, [])
+    body = BODY_COMBINATIONS.get(num_tries, [])
 
     for i in range(5):
         if i < len(body):
-            print_text(limbs[body[i]])
+            print_text(LIMBS[body[i]])
         else:
             print_text('')
 
@@ -50,7 +50,7 @@ def print_available_letters(initial_letters: list, av_letters: list) -> None:
         if l in av_letters:
             firstset += l + ' '
         else:
-            firstset += ' '*2
+            firstset += ' ' * 2
 
     print_text(firstset)
 
@@ -58,7 +58,7 @@ def print_available_letters(initial_letters: list, av_letters: list) -> None:
         if l in av_letters:
             secondset += l + ' '
         else:
-            secondset += ' '*2
+            secondset += ' ' * 2
     print_text(secondset)
 
     print_separator()
@@ -69,10 +69,9 @@ def get_random_word() -> str:
     try:
         with open('words.txt', 'r') as f:
             words = f.readlines()
-            print(words)
             if not words:                
                 print('No words were found in the file specified')
-                exit(-1)
+                exit(-2)
     except FileNotFoundError:
         print('File with words not found!')
         exit(-1)
@@ -117,7 +116,7 @@ def main() -> None:
     has_won = False
 
     while failed_attempts <= 7:
-        print('\033[H\033[J')
+        system('clear') #cls in windows
         print_separator()
         print_text('Hangman')
         print_separator()
@@ -138,12 +137,12 @@ def main() -> None:
         cmpWord = list(set(word_to_guess.replace(' ', '')))
         cmpWord.sort()
         guesses.sort()
-        if cmpWord == guesses:
-            has_won = True
-        else:
-            has_won = False
-
-    print('You Won! :)' if has_won else 'You Lost! :(')
+        has_won = cmpWord == guesses
+        
+    print_text('The correct word is: {}'.format(word_to_guess))
+    print_separator()
+    print_text('You Won! :)' if has_won else 'You Lost! :(') #surprise
+    print_separator()
 
 
 if __name__ == '__main__':
