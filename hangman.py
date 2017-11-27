@@ -17,8 +17,8 @@ def print_text(message: str) -> None:
 def print_hangman(num_tries: int) -> None:
     print_text('|')
     print_text('|')
-    LIMBS = ['O', ' | ', '/| ', '/|\\', '|', '/  ', '/ \\']
-    BODY_COMBINATIONS = {
+    limbs = ['O', ' | ', '/| ', '/|\\', '|', '/  ', '/ \\']
+    bodyCombinations = {
         1: [0],
         2: [0, 1],
         3: [0, 2],
@@ -28,11 +28,11 @@ def print_hangman(num_tries: int) -> None:
         7: [0, 3, 4, 6]
     }
 
-    body = BODY_COMBINATIONS.get(num_tries, [])
+    body = bodyCombinations.get(num_tries, [])
 
     for i in range(5):
         if i < len(body):
-            print_text(LIMBS[body[i]])
+            print_text(limbs[body[i]])
         else:
             print_text('')
 
