@@ -4,16 +4,6 @@ from random import choice as random_choice
 import string
 
 DRAW_SIZE = 35 # odd int
-LIMBS = ['O', ' | ', '/| ', '/|\\', '|', '/  ', '/ \\']
-BODY_COMBINATIONS = {
-    1: [0],
-    2: [0, 1],
-    3: [0, 2],
-    4: [0, 3],
-    5: [0, 3, 4],
-    6: [0, 3, 4, 5],
-    7: [0, 3, 4, 6]
-}
 
 
 def print_separator() -> None:
@@ -27,6 +17,16 @@ def print_text(message: str) -> None:
 def print_hangman(num_tries: int) -> None:
     print_text('|')
     print_text('|')
+    LIMBS = ['O', ' | ', '/| ', '/|\\', '|', '/  ', '/ \\']
+    BODY_COMBINATIONS = {
+        1: [0],
+        2: [0, 1],
+        3: [0, 2],
+        4: [0, 3],
+        5: [0, 3, 4],
+        6: [0, 3, 4, 5],
+        7: [0, 3, 4, 6]
+    }
 
     body = BODY_COMBINATIONS.get(num_tries, [])
 
@@ -133,10 +133,8 @@ def main() -> None:
         else:
             failed_attempts += 1
 
-        cmpWord = list(set(word_to_guess.replace(' ', '')))
-        cmpWord.sort()
-        guesses.sort()
-        has_won = cmpWord == guesses
+        cmpWord = set(word_to_guess.replace(' ', ''))
+        has_won = cmpWord == set(guesses)
         
     print_text('The correct word is: {}'.format(word_to_guess))
     print_separator()
